@@ -1,5 +1,5 @@
 .dashboard {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 20px;
   font-family: system-ui, -apple-system, sans-serif;
@@ -14,27 +14,42 @@
   border-bottom: 2px solid #eee;
 }
 
-.waybill-card {
+.header-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  margin-bottom: 15px;
+  gap: 15px;
+}
+
+.table-container {
+  overflow-x: auto;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background-color: #fcfcfc;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
-.waybill-info {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+.waybills-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fcfcfc;
+  text-align: left;
 }
 
-.waybill-id {
-  font-weight: bold;
-  font-size: 1.1em;
+.waybills-table th, .waybills-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.waybills-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+}
+
+.waybills-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.waybills-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .waybill-route {
@@ -45,10 +60,10 @@
   display: inline-block;
   background: #e3f2fd;
   color: #1976d2;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.85em;
-  width: fit-content;
+  white-space: nowrap;
 }
 
 .waybill-actions {
@@ -63,6 +78,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: opacity 0.2s;
+  white-space: nowrap;
 }
 
 .btn:hover {
@@ -71,6 +87,13 @@
 
 .btn-create {
   background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1em;
+}
+
+.btn-calc {
+  background-color: #2196f3;
   color: white;
   padding: 10px 20px;
   font-size: 1em;

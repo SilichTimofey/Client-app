@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchWaybills } from './api/service';
-import './App.css';
+import WaybillAPI from './api/service';
 
 function App() {
   const [waybills, setWaybills] = useState([]);
@@ -10,25 +9,25 @@ function App() {
   const [calculatedPrice, setCalculatedPrice] = useState(null);
 
   useEffect(() => {
-    fetchWaybills().then((data) => {
-      setWaybills(data);
+    setTimeout(() => {
+      setWaybills(WaybillAPI.all());
       setIsLoading(false);
-    });
+    }, 500);
   }, []);
 
   const handleCreateWaybill = () => {
-    const newWaybill = {
-      id: Date.now().toString().slice(-7),
+    WaybillAPI.add({
       sender: 'Неизвестно',
       receiver: 'Неизвестно',
       status: 'Создан',
       price: 'Рассчитывается...'
-    };
-    setWaybills([newWaybill, ...waybills]);
+    });
+    setWaybills([...WaybillAPI.all()]);
   };
 
   const handleDeleteWaybill = (id) => {
-    setWaybills(waybills.filter(waybill => waybill.id !== id));
+    WaybillAPI.delete(id);
+    setWaybills([...WaybillAPI.all()]);
   };
 
   const handleCalculateSubmit = (e) => {
@@ -37,14 +36,14 @@ function App() {
   };
 
   return (
-    <div className="dashboard">
-      <header className="header">
+    <div>
+      <header>
         <h1>Мои накладные</h1>
-        <div className="header-actions">
-          <button className="btn btn-calc" onClick={() => setIsCalcOpen(true)}>
+        <div>
+          <button onClick={() => setIsCalcOpen(true)}>
             Рассчитать стоимость
           </button>
-          <button className="btn btn-create" onClick={handleCreateWaybill}>
+          <button onClick={handleCreateWaybill}>
             + Создать накладную
           </button>
         </div>
@@ -52,38 +51,49 @@ function App() {
 
       <main>
         {isLoading ? (
-          <div className="loader">Загрузка данных...</div>
+          <div>Загрузка данных...</div>
         ) : (
-          <div className="waybill-list">
+          <div>
             {waybills.length === 0 ? (
-              <p className="empty-state">Список накладных пуст</p>
+              <p>Список накладных пуст</p>
             ) : (
-              waybills.map((waybill) => (
-                <div key={waybill.id} className="waybill-card">
-                  <div className="waybill-info">
-                    <span className="waybill-id">№ {waybill.id}</span>
-                    <span className="waybill-route">{waybill.sender} → {waybill.receiver}</span>
-                    <span className="waybill-status">{waybill.status}</span>
-                  </div>
-                  <div className="waybill-actions">
-                    <button className="btn btn-disabled">Редактировать</button>
-                    <button 
-                      className="btn btn-delete" 
-                      onClick={() => handleDeleteWaybill(waybill.id)}
-                    >
-                      Удалить
-                    </button>
-                  </div>
-                </div>
-              ))
+              <div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Номер</th>
+                      <th>Маршрут</th>
+                      <th>Статус</th>
+                      <th>Действия</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {waybills.map((waybill) => (
+                      <tr key={waybill.id}>
+                        <td><strong>№ {waybill.id}</strong></td>
+                        <td>{waybill.sender} → {waybill.receiver}</td>
+                        <td><span>{waybill.status}</span></td>
+                        <td>
+                          <div>
+                            <button>Редактировать</button>
+                            <button onClick={() => handleDeleteWaybill(waybill.id)}>
+                              Удалить
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}
       </main>
 
       {isCalcOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div>
+          <div>
             <h2>Калькулятор стоимости</h2>
             <form onSubmit={handleCalculateSubmit}>
               <input 
@@ -119,18 +129,18 @@ function App() {
                 onChange={e => setCalcData({...calcData, weight: e.target.value})}
                 required
               />
-              <div className="modal-actions">
-                <button type="submit" className="btn btn-calc">Рассчитать</button>
-                <button type="button" className="btn btn-disabled" onClick={() => {
+              <div>
+                <button type="submit">Рассчитать</button>
+                <button type="button" onClick={() => {
                   setIsCalcOpen(false);
                   setCalculatedPrice(null);
                 }}>Закрыть</button>
               </div>
             </form>
             {calculatedPrice && (
-              <div className="calc-result">
+              <div>
                 <p>Примерная стоимость: <strong>{calculatedPrice} ₽</strong></p>
-                <button className="btn btn-create" onClick={() => {
+                <button onClick={() => {
                   handleCreateWaybill();
                   setIsCalcOpen(false);
                   setCalculatedPrice(null);
